@@ -2,7 +2,9 @@
   "name": "4gl-formatter",
 	"displayName": "4gl-formatter",
 	"description": "Format Informix 4gl files",
-	"version": "0.0.1",
+    "version": "0.0.1",
+    "license": "ISC",
+    "publisher": "GEETMOUSSED",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
