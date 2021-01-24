@@ -1,5 +1,6 @@
 # VSCode 4gl-formatter
 
+![banner](img/ifx-4gl-formatter.png)
 ## Features
 
 Indent your 4gl code to make it easier to read :
