@@ -6,7 +6,7 @@ Indent your 4gl code to make it easier to read :
 
 this code is lazyly adapted from [this script I made](https://github.com/Di-KaZ/informix-4gl-formatter)
 
-I didn't really searched much on how to write a vscode extention, please be gentle with me 😃
+> ⚠ I didn't really searched much on how to write a vscode extention, please be gentle with me 😃
 
 ![preview](img/preview.gif)
 
