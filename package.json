@@ -8,18 +8,42 @@
 	},
 	"categories": [
 		"Other"
-	],
+    ],
+    "keywords": ["4gl", "informix"],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Di-KaZ/vscode-4gl-formatter"
+    },
 	"activationEvents": [
-        "onCommand:4gl-formatter.helloWorld"
+        "onCommand:4gl-formatter.activate"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "4gl-formatter.helloWorld",
-				"title": "Hello World"
+				"command": "4gl-formatter.activate",
+				"title": "Activate 4gl formatter"
 			}
-		]
+        ],
+        "configuration":[
+            {
+                "properties": {
+                    "4gl-formatter.indentation": {
+                        "type": "string",
+                        "enum": ["tab", "spaces"],
+
+                        "default": "tab",
+                        "description": "Indentation to use when formatting"
+                    },
+                    "4gl-formatter.mode": {
+                        "type": "string",
+                        "enum": ["none", "line", "condition", "number"],
+                        "default": "line",
+                        "description": "Mode to use for the matching statement"
+                    }
+                }
+            }
+        ]
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",

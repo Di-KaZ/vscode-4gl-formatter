@@ -1,6 +1,6 @@
-import { IndentMode, options } from "./app";
 import { FileStack } from "./FileStack";
-import { COLORS, Printer } from "./Utils";
+import { Printer } from "./Printer";
+import { Indent, IndentMode, options } from "./settings";
 
 interface Tokens {
     EMPTY_LINE_OR_COMMENT: RegExp;
@@ -37,6 +37,7 @@ export default class FileFormatter {
     private _indent_level: number; // current indentation depth
     private _stack: FileStack;
     private _lines: string[];
+    private _indent: string;
 
     /**
      * Create a file instance
@@ -50,6 +51,7 @@ export default class FileFormatter {
         this._out_lines = [];
         this._indent_level = 0;
         this._stack = new FileStack();
+        this._indent = options.indentation === Indent.TAB ? "\t" : "    "
     }
 
     /**
@@ -74,10 +76,7 @@ export default class FileFormatter {
         // check if errors in file are detected by the stack
         this._stack.checkStackStatus();
         // print formatted lines in out file
-        Printer.info(
-            `Done Formatting file${COLORS.RESET} in ${COLORS.FGRED}${(new Date().getTime() - timer_Start) / 1000
-            } seconds !${COLORS.RESET}`
-        );
+        Printer.info(`Done Formatting file in ${(new Date().getTime() - timer_Start) / 1000} seconds !`);
     }
 
     public getOutLines(): string[] {
@@ -135,7 +134,7 @@ export default class FileFormatter {
         // if line is just empty or just a signle line comment print it
         if (TOKENS.EMPTY_LINE_OR_COMMENT.test(line)) {
             this._out_lines.push(
-                options.indent.repeat(this._indent_level) + line.trimLeft()
+                this._indent.repeat(this._indent_level) + line.trimLeft()
             );
             return;
         }
@@ -170,7 +169,7 @@ export default class FileFormatter {
             this._indent_level = 0;
         }
         // output line with indentation
-        this._out_lines.push(options.indent.repeat(this._indent_level) + line);
+        this._out_lines.push(this._indent.repeat(this._indent_level) + line);
 
         // set indentation fo next line
         if (TOKENS.INCREMENT_STATEMENT.test(line)) {
