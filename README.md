@@ -11,7 +11,7 @@ this code is lazyly adapted from [this script I made](https://github.com/Di-KaZ/
 ![preview](img/preview.gif)
 
 ## Extension Settings
-![preview](img/preview_settings.png)
+![preview](img/preview_settings.PNG)
 
 * `4gl-formatter.activate`: to enable this extension
 ![preview](img/How_to_enable.gif)
