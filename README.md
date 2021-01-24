@@ -18,6 +18,7 @@ this code is lazyly adapted from [this script I made](https://github.com/Di-KaZ/
 * `4gl-formatter.activate`: to enable this extension
 ![preview](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/img/How_to_enable.gif)
 
+Then use **format document** Command or activate **format on save** setting in your vscode
 
 ## Dependencies
 
