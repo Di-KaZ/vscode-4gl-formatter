@@ -1,6 +1,8 @@
 # VSCode 4gl-formatter
 
 ![banner](https://raw.githubusercontent.com/Di-KaZ/vscode-4gl-formatter/main/img/ifx-4gl-formatter.png)
+
+
 ![version](https://vsmarketplacebadge.apphb.com/version/GEETMOUSSED.4gl-formatter.svg
 )    ![installs](https://vsmarketplacebadge.apphb.com/installs/GEETMOUSSED.4gl-formatter.svg) ![rating](https://vsmarketplacebadge.apphb.com/rating-short/GEETMOUSSED.4gl-formatter.svg)
 
