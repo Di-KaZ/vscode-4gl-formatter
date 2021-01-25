@@ -3,7 +3,7 @@
   "icon": "img/icon.jpg",
 	"displayName": "4gl-formatter",
 	"description": "Format Informix 4gl files",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "license": "ISC",
     "publisher": "GEETMOUSSED",
 	"engines": {
