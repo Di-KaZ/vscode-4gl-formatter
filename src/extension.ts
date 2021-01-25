@@ -6,26 +6,20 @@ export function activate(context: vscode.ExtensionContext) {
     //   The command has been defined in the package.json file
     //   Now provide the implementation of the command with registerCommand
     //   The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand(
+    let actiavte = vscode.commands.registerCommand(
         "4gl-formatter.activate",
         () => {
             updateConfig();
             vscode.window.showInformationMessage("4gl formatter activated");
         }
     );
-    context.subscriptions.push(disposable);
+    context.subscriptions.push(actiavte);
 
     let fourGlFormatter = vscode.languages.registerDocumentFormattingEditProvider("4gl", {
         provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
-            let formatter = new FileFormatter();
-            formatter.setLines(document.getText().split("\n"));
+            let formatter = new FileFormatter(document);
             formatter.processLines();
-            let textEditResult: vscode.TextEdit[] = []
-            formatter.getOutLines().forEach((line, i) => {
-                textEditResult.push(vscode.TextEdit.delete(document.lineAt(i).range));
-                textEditResult.push(vscode.TextEdit.insert(document.lineAt(i).range.start, line));
-            });
-            return textEditResult;
+            return formatter.getOutLines();
         },
     });
     context.subscriptions.push(fourGlFormatter);

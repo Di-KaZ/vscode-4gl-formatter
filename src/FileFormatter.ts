@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import { FileStack } from "./FileStack";
 import { Printer } from "./Printer";
 import { Indent, IndentMode, options } from "./settings";
@@ -32,12 +33,12 @@ const TOKENS: Tokens = {
 };
 
 export default class FileFormatter {
-    private _out_lines: string[]; // formatted lines
+    private _out_edit: vscode.TextEdit[]; // formatted lines
     private _current_line_index: number; // current line that we are formatting
     private _indent_level: number; // current indentation depth
     private _stack: FileStack;
-    private _lines: string[];
     private _indent: string;
+    private _document: vscode.TextDocument;
 
     /**
      * Create a file instance
@@ -45,42 +46,34 @@ export default class FileFormatter {
      * @param out_directory
      * @param indent_chars
      */
-    public constructor() {
-        this._lines = [];
+    public constructor(document: vscode.TextDocument) {
         this._current_line_index = 0;
-        this._out_lines = [];
+        this._out_edit = [];
         this._indent_level = 0;
         this._stack = new FileStack();
+        this._document = document;
         this._indent = options.indentation === Indent.TAB ? "\t" : "    "
     }
 
-    /**
-     * Set the lines contained in the file
-     * @param lines
-     */
-    public setLines(lines: string[]): void {
-        this._lines = lines;
-    }
 
     /**
      * Process line of the file one by one
      */
     public processLines(): void {
-        const timer_Start = new Date().getTime();
         Printer.info(`Formatting file`);
         // tant qu'il y a des lignes a traité on s'en occupe
-        while (this._current_line_index < this._lines.length) {
+        while (this._current_line_index < this._document.lineCount) {
             this.processLine();
-            this._current_line_index += 1;
         }
+        // finished formatting reporting problems found
         // check if errors in file are detected by the stack
         this._stack.checkStackStatus();
-        // print formatted lines in out file
-        Printer.info(`Done Formatting file in ${(new Date().getTime() - timer_Start) / 1000} seconds !`);
+        Printer.info(`Done Formatting file.`);
     }
 
-    public getOutLines(): string[] {
-        return this._out_lines;
+    // return the formatted files lines
+    public getOutLines(): vscode.TextEdit[] {
+        return this._out_edit;
     }
 
     /**
@@ -124,55 +117,62 @@ export default class FileFormatter {
         return line;
     }
 
+    private addFormattedLine(text: string) {
+        let line_range = this._document.lineAt(this._current_line_index).range;
+        this._out_edit.push(vscode.TextEdit.delete(line_range));
+        this._out_edit.push(vscode.TextEdit.insert(line_range.start, text));
+        this._current_line_index += 1; // increment the current line in file
+    }
+
     /**
      * format current line and prepare the next one
      * @returns
      */
     private processLine(): void {
-        let line: string = this._lines[this._current_line_index];
+        // get the current line in file
+        let text: string = this._document.lineAt(this._current_line_index).text;
 
         // if line is just empty or just a signle line comment print it
-        if (TOKENS.EMPTY_LINE_OR_COMMENT.test(line)) {
-            this._out_lines.push(
-                this._indent.repeat(this._indent_level) + line.trimLeft()
-            );
+        if (TOKENS.EMPTY_LINE_OR_COMMENT.test(text)) {
+            this.addFormattedLine(text);
             return;
         }
 
         // if mutiline comment search for end of it /!\ do not manage charracter after the closing } (need to be on a newline) TODO
-        if (TOKENS.MULTI_LINE_COMMENT_OPEN.test(line)) {
-            while (TOKENS.MULTI_LINE_COMMENT_CLOSE.test(line) === false) {
-                this._out_lines.push(line);
+        if (TOKENS.MULTI_LINE_COMMENT_OPEN.test(text)) {
+            while (TOKENS.MULTI_LINE_COMMENT_CLOSE.test(text) === false) {
+                this.addFormattedLine(text);
                 this._current_line_index += 1;
-                line = this._lines[this._current_line_index];
+                text = this._document.lineAt(this._current_line_index).text;
             }
-            this._out_lines.push(line);
+            this.addFormattedLine(text);
             return;
         }
 
         // if not empty or a comment //
         // delete before and after space to clean up indentation and search token from start of string
-        line = line.trim();
+        text = text.trim();
         if (options.mode !== IndentMode.MODE_NONE) {
-            line = this.manageIfStack(line);
+            text = this.manageIfStack(text);
         }
 
         // check if we have to decrement indentation
-        if (TOKENS.DECREMENT_STATEMENT.test(line)) {
+        if (TOKENS.DECREMENT_STATEMENT.test(text)) {
             this._indent_level > 0
                 ? (this._indent_level -= 1)
                 : (this._indent_level = 0);
         }
 
         // or reset it
-        if (TOKENS.RESET_STATEMENT.test(line)) {
+        if (TOKENS.RESET_STATEMENT.test(text)) {
             this._indent_level = 0;
         }
+
         // output line with indentation
-        this._out_lines.push(this._indent.repeat(this._indent_level) + line);
+        this.addFormattedLine(this._indent.repeat(this._indent_level) + text);
 
         // set indentation fo next line
-        if (TOKENS.INCREMENT_STATEMENT.test(line)) {
+        if (TOKENS.INCREMENT_STATEMENT.test(text)) {
             this._indent_level += 1;
         }
     }
