@@ -1,8 +1,9 @@
 {
   "name": "4gl-formatter",
+  "icon": "img/icon.jpg",
 	"displayName": "4gl-formatter",
 	"description": "Format Informix 4gl files",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "license": "ISC",
     "publisher": "GEETMOUSSED",
 	"engines": {
@@ -14,7 +15,7 @@
     "keywords": ["4gl", "informix"],
     "repository": {
         "type": "git",
-        "url": "https://github.com/Di-KaZ/vscode-4gl-formatter"
+        "url": "https://github.com/Di-KaZ/vscode-4gl-formatter.git"
     },
 	"activationEvents": [
         "onCommand:4gl-formatter.activate"
