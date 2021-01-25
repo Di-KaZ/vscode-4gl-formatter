@@ -13,13 +13,13 @@ I will work on an adapted architecture and feature when I got the time to.
 
 ![preview](img/preview.gif)
 
+![preview](img/comment_preview.PNG)
+**Now display comments & errors as text decoration !**
+
 ## Extension Settings
 ![preview](img/preview_settings.PNG)
 
-* `4gl-formatter.activate`: to enable this extension
-![preview](img/How_to_enable.gif)
-
-Then use **format document** Command or activate **format on save** setting in your vscode
+* `4gl-formatter.format-4gl-file -> "4gl Formatter : Format file"`:  format the active file
 
 > you can see the log of the formatter in the **'OUT'** pane by selecting **"Moussed's 4gl formatter"**
  It shows some useful info , like when it find an orphan **if** or **else** statement in the file.
@@ -33,7 +33,7 @@ Then use **format document** Command or activate **format on save** setting in y
 
 ## Release Notes
 
-first version
-### 0.0.1
+### 0.1.0 - stable
+ - Comments are now displaying as decoration rather that directly in the file
+- Remove the use of vscode formatter api as it's easier like this for me
 
-initial release
