@@ -2,8 +2,6 @@ import * as vscode from "vscode";
 import FileFormatter from "./FileFormatter";
 import { updateConfig } from "./settings";
 
-let formatter = new FileFormatter();
-
 export function activate(context: vscode.ExtensionContext) {
 
     // I don't have time to implement it via formatter api so...
@@ -11,6 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
         const { activeTextEditor } = vscode.window;
         if (activeTextEditor) {
             const { document } = activeTextEditor;
+            let formatter = new FileFormatter();
             formatter.setDocument(document);
             formatter.processLines();
             vscode.workspace.applyEdit(formatter.getOutLines());
