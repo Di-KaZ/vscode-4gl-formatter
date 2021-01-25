@@ -33,7 +33,7 @@ const TOKENS: Tokens = {
 };
 
 export default class FileFormatter {
-    private _out_edit: vscode.TextEdit[]; // formatted lines
+    private _out_edit: vscode.WorkspaceEdit; // formatted lines
     private _current_line_index: number; // current line that we are formatting
     private _indent_level: number; // current indentation depth
     private _stack: FileStack | null;
@@ -48,7 +48,7 @@ export default class FileFormatter {
      */
     public constructor() {
         this._current_line_index = 0;
-        this._out_edit = [];
+        this._out_edit = new vscode.WorkspaceEdit();
         this._indent_level = 0;
         this._indent = options.indentation === Indent.TAB ? "\t" : "    "
         this._stack = null;
@@ -68,7 +68,6 @@ export default class FileFormatter {
         // tant qu'il y a des lignes a traité on s'en occupe
         while (this._current_line_index < this._document!.lineCount) {
             this.processLine();
-            console.log(this._current_line_index)
         }
         // finished formatting reporting problems found
         // check if errors in file are detected by the stack
@@ -78,7 +77,7 @@ export default class FileFormatter {
     }
 
     // return the formatted files lines
-    public getOutLines(): vscode.TextEdit[] {
+    public getOutLines(): vscode.WorkspaceEdit {
         return this._out_edit;
     }
 
@@ -108,8 +107,8 @@ export default class FileFormatter {
      */
     private addFormattedLine(text: string) {
         let line_range = this._document!.lineAt(this._current_line_index).range;
-        this._out_edit.push(vscode.TextEdit.delete(line_range));
-        this._out_edit.push(vscode.TextEdit.insert(line_range.start, text));
+        this._out_edit.delete(this._document!.uri, line_range);
+        this._out_edit.insert(this._document!.uri, line_range.start, text);
         this._current_line_index += 1; // increment the current line in file
     }
 

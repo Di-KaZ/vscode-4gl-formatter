@@ -111,26 +111,24 @@ export class FileStack {
 
     private static modeCondition(node: Node): string {
         return (
-            "  { " +
+            "           " +
             (node.content.text.length > 10
                 ? node.content.text.substr(3, 40)
-                : node.content.text.slice(3)) +
-            " }"
+                : node.content.text.slice(3))
         );
     }
 
     private static modeNumber(node: Node): string {
         return (
-            "  { " +
+            "           " +
             Array.from(Array(node.stackSize + 1).keys())
                 .map((val) => val + 1)
-                .join(".") +
-            " }"
+                .join(".")
         );
     }
 
     private static modeLine(node: Node): string {
-        return `  { Match Line ${node.line + 1} }`;
+        return `           Line ${node.line + 1}`;
     }
 
     public getDecoErr() {

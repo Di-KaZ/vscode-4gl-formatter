@@ -5,50 +5,25 @@ import { updateConfig } from "./settings";
 let formatter = new FileFormatter();
 
 export function activate(context: vscode.ExtensionContext) {
-    let actiavte = vscode.commands.registerCommand(
-        "4gl-formatter.activate",
-        () => {
-            updateConfig();
-            vscode.window.showInformationMessage("4gl formatter activated");
-        }
-    );
-    context.subscriptions.push(actiavte);
 
-    // Create the new formatter
-    let fourGlFormatter = vscode.languages.registerDocumentFormattingEditProvider("4gl", {
-        provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
+    // I don't have time to implement it via formatter api so...
+    let format = vscode.commands.registerCommand('4gl-formatter.format-4gl-file', () => {
+        const { activeTextEditor } = vscode.window;
+        if (activeTextEditor) {
+            const { document } = activeTextEditor;
             formatter.setDocument(document);
             formatter.processLines();
-            return formatter.getOutLines();
-        },
+            vscode.workspace.applyEdit(formatter.getOutLines());
+            let infoMatchs = formatter.getDecoInfo();
+            infoMatchs.forEach(info => activeTextEditor.setDecorations(info.decoration, [info.decorationOption]));
+            let infosErr = formatter.getDecoErr();
+            infosErr.forEach(info => activeTextEditor.setDecorations(info.decoration, [info.decorationOption]));
+        }
+        vscode.window.showInformationMessage("Formatted file succesfully");
     });
-    context.subscriptions.push(fourGlFormatter);
 
-    // vscode.workspace.onDidChangeTextDocument(e => {
-    //     let editor = vscode.window.visibleTextEditors
-    //         .filter(editorr => editorr.document.uri === e.document.uri)[0];
-    //     formatter.setDocument(e.document)
-    //     // formatter.updateIfStack();
-    //     // Getting Match decorators
-    //     let infoMatchs = formatter.getDecoInfo();
-    //     infoMatchs.forEach(info => editor.setDecorations(info.decoration, [info.decorationOption]))
-    // })
-
-    vscode.workspace.onWillSaveTextDocument(e => {
-        let editor = vscode.window.visibleTextEditors
-            .filter(editorr => editorr.document.uri === e.document.uri)[0];
-        formatter.setDocument(e.document)
-        formatter.processLines();
-        // Getting Match decorators
-        let infoMatchs = formatter.getDecoInfo();
-        infoMatchs.forEach(info => editor.setDecorations(info.decoration, [info.decorationOption]))
-
-        // TODO FIX THIS
-        // // Getting error decorators
-        // let infoErr = formatter.getDecoErr();
-        // infoErr.forEach(info => editor.setDecorations(info.decoration, [info.decorationOption]))
-    })
-
+    // context.subscriptions.push(actiavte);
+    context.subscriptions.push(format);
 
     // update config when needed
     function onConfigChange(e: vscode.ConfigurationChangeEvent): void {

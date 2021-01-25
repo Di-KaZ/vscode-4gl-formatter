@@ -3,50 +3,50 @@
   "icon": "img/icon.jpg",
 	"displayName": "4gl-formatter",
 	"description": "Format Informix 4gl files",
-    "version": "0.0.3",
-    "license": "ISC",
-    "publisher": "GEETMOUSSED",
+	"version": "0.0.3",
+	"license": "ISC",
+	"publisher": "GEETMOUSSED",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
 	"categories": [
 		"Formatters"
-    ],
-    "keywords": ["4gl", "informix", "formatter"],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Di-KaZ/vscode-4gl-formatter.git"
-    },
+	],
+	"keywords": ["4gl", "informix", "formatter"],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Di-KaZ/vscode-4gl-formatter.git"
+	},
 	"activationEvents": [
-        "onCommand:4gl-formatter.activate"
+		"onCommand:4gl-formatter.format-4gl-file"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "4gl-formatter.activate",
-				"title": "Activate 4gl formatter"
+				"command": "4gl-formatter.format-4gl-file",
+				"title": "4gl formatter : Format file"
 			}
-        ],
-        "configuration":[
-            {
-                "properties": {
-                    "4gl-formatter.indentation": {
-                        "type": "string",
-                        "enum": ["tab", "spaces"],
+		],
+		"configuration":[
+			{
+				"properties": {
+					"4gl-formatter.indentation": {
+						"type": "string",
+						"enum": ["tab", "spaces"],
 
-                        "default": "tab",
-                        "description": "Indentation to use when formatting"
-                    },
-                    "4gl-formatter.mode": {
-                        "type": "string",
-                        "enum": ["none", "line", "condition", "number"],
-                        "default": "line",
-                        "description": "Mode to use for the matching statement"
-                    }
-                }
-            }
-        ]
+						"default": "tab",
+						"description": "Indentation to use when formatting"
+					},
+					"4gl-formatter.mode": {
+						"type": "string",
+						"enum": ["none", "line", "condition", "number"],
+						"default": "line",
+						"description": "Mode to use for the matching statement"
+					}
+				}
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",
