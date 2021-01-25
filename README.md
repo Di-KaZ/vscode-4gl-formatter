@@ -18,6 +18,7 @@ I will work on an adapted architecture and feature when I got the time to.
 ![preview](https://raw.githubusercontent.com/Di-KaZ/vscode-4gl-formatter/main/img/preview.gif)
 
 ![comments](https://raw.githubusercontent.com/Di-KaZ/vscode-4gl-formatter/main/img/comment_preview.PNG)
+
 **Now display comments & errors as text decoration !**
 
 ## Extension Settings
