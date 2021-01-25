@@ -1,72 +1,83 @@
 {
-  "name": "4gl-formatter",
-  "icon": "img/icon.jpg",
-	"displayName": "4gl-formatter",
-	"description": "Format Informix 4gl files",
-	"version": "0.1.0",
-	"license": "ISC",
-	"publisher": "GEETMOUSSED",
-	"engines": {
-		"vscode": "^1.52.0"
-	},
-	"categories": [
-		"Formatters"
-	],
-	"keywords": ["4gl", "informix", "formatter"],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Di-KaZ/vscode-4gl-formatter.git"
-	},
-	"activationEvents": [
-		"onCommand:4gl-formatter.format-4gl-file"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "4gl-formatter.format-4gl-file",
-				"title": "4gl formatter : Format file"
-			}
-		],
-		"configuration":[
-			{
-				"properties": {
-					"4gl-formatter.indentation": {
-						"type": "string",
-						"enum": ["tab", "spaces"],
-
-						"default": "tab",
-						"description": "Indentation to use when formatting"
-					},
-					"4gl-formatter.mode": {
-						"type": "string",
-						"enum": ["none", "line", "condition", "number"],
-						"default": "line",
-						"description": "Mode to use for the matching statement"
-					}
-				}
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "yarn run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile && yarn run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.52.0",
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.0.4",
-		"@types/node": "^12.11.7",
-		"eslint": "^7.15.0",
-		"@typescript-eslint/eslint-plugin": "^4.9.0",
-		"@typescript-eslint/parser": "^4.9.0",
-		"glob": "^7.1.6",
-		"mocha": "^8.1.3",
-		"typescript": "^4.1.2",
-		"vscode-test": "^1.4.1"
-	}
+    "name": "4gl-formatter",
+    "icon": "img/icon.jpg",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Di-KaZ/vscode-4gl-formatter.git"
+    },
+    "displayName": "4gl-formatter",
+    "description": "Format Informix 4gl files",
+    "version": "0.1.0",
+    "license": "ISC",
+    "publisher": "GEETMOUSSED",
+    "engines": {
+        "vscode": "^1.52.0"
+    },
+    "categories": [
+        "Formatters"
+    ],
+    "keywords": [
+        "4gl",
+        "informix",
+        "formatter"
+    ],
+    "activationEvents": [
+        "onCommand:4gl-formatter.format-4gl-file"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "4gl-formatter.format-4gl-file",
+                "title": "4gl formatter : Format file"
+            }
+        ],
+        "configuration": [
+            {
+                "properties": {
+                    "4gl-formatter.indentation": {
+                        "type": "string",
+                        "enum": [
+                            "tab",
+                            "spaces"
+                        ],
+                        "default": "tab",
+                        "description": "Indentation to use when formatting"
+                    },
+                    "4gl-formatter.mode": {
+                        "type": "string",
+                        "enum": [
+                            "none",
+                            "line",
+                            "condition",
+                            "number"
+                        ],
+                        "default": "line",
+                        "description": "Mode to use for the matching statement"
+                    }
+                }
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "yarn run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "yarn run compile && yarn run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.52.0",
+        "@types/glob": "^7.1.3",
+        "@types/mocha": "^8.0.4",
+        "@types/node": "^12.11.7",
+        "eslint": "^7.15.0",
+        "@typescript-eslint/eslint-plugin": "^4.9.0",
+        "@typescript-eslint/parser": "^4.9.0",
+        "glob": "^7.1.6",
+        "mocha": "^8.1.3",
+        "typescript": "^4.1.2",
+        "vscode-test": "^1.4.1"
+    }
 }

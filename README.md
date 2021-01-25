@@ -1,8 +1,10 @@
 # VSCode 4gl-formatter
 
-![banner](img/ifx-4gl-formatter.png)
-## Features
+![banner](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/img/ifx-4gl-formatter.png?raw=true)
+![version](https://vsmarketplacebadge.apphb.com/version/GEETMOUSSED.4gl-formatter.svg
+)    ![installs](https://vsmarketplacebadge.apphb.com/installs/GEETMOUSSED.4gl-formatter.svg) ![rating](https://vsmarketplacebadge.apphb.com/rating-short/GEETMOUSSED.4gl-formatter.svg)
 
+## Features
 Indent your 4gl code to make it easier to read :
 
 # [Dowload Link (MarketPlace)](https://marketplace.visualstudio.com/items?itemName=GEETMOUSSED.4gl-formatter)
@@ -11,13 +13,13 @@ I will work on an adapted architecture and feature when I got the time to.
 
 > ⚠ I didn't really searched much on how to write a vscode extention, please be gentle with me 😃
 
-![preview](img/preview.gif)
+![preview](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/img/preview.gif?raw=true)
 
-![preview](img/comment_preview.PNG)
+![comments](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/img/comment_preview.PNG?raw=true)
 **Now display comments & errors as text decoration !**
 
 ## Extension Settings
-![preview](img/preview_settings.PNG)
+![settings](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/img/preview_settings.PNG?raw=true)
 
 * `4gl-formatter.format-4gl-file -> "4gl Formatter : Format file"`:  format the active file
 
