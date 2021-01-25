@@ -57,7 +57,7 @@ export default class FileFormatter {
 
     public setDocument(document: vscode.TextDocument): void {
         this._document = document;
-        this._stack = new FileStack(document);
+        this._stack = new FileStack();
     }
 
     /**
@@ -68,6 +68,7 @@ export default class FileFormatter {
         // tant qu'il y a des lignes a traité on s'en occupe
         while (this._current_line_index < this._document!.lineCount) {
             this.processLine();
+            console.log(this._current_line_index)
         }
         // finished formatting reporting problems found
         // check if errors in file are detected by the stack
@@ -87,25 +88,24 @@ export default class FileFormatter {
      * @returns line + comment
      */
     private manageIfStack(line: vscode.TextLine): void {
-        // if we found a new nesting token like an if add it to the stack
         let text = line.text.trim();
+        // if we found a new nesting token like an if add it to the stack
         if (TOKENS.PUSH_STACK.test(text)) {
             this._stack!.pushStack(line, this._current_line_index);
+        } else if (TOKENS.PRINT_LIBL_STACK.test(text)) {
+            // if it's an intermediate token like an else juste add the comment
             this._stack!.getTopStackComment(line, this._current_line_index + 1)
-            return;
         }
-        // if it's an intermediate token like an else juste add the comment
-        if (TOKENS.PRINT_LIBL_STACK.test(text)) {
-            this._stack!.getTopStackComment(line, this._current_line_index + 1)
-            return;
-        }
-        // if we close the statement pop the stack
-        if (TOKENS.POP_STACK.test(text)) {
+        else if (TOKENS.POP_STACK.test(text)) {
+            // if we close the statement pop the stack
             this._stack!.popTopStackComment(line, this._current_line_index + 1)
-            return;
         }
     }
 
+    /**
+     * delete the current line and add formatted text on it
+     * @param text
+     */
     private addFormattedLine(text: string) {
         let line_range = this._document!.lineAt(this._current_line_index).range;
         this._out_edit.push(vscode.TextEdit.delete(line_range));
@@ -160,17 +160,25 @@ export default class FileFormatter {
 
         // output line with indentation
         this.addFormattedLine(this._indent.repeat(this._indent_level) + text);
-        // console.log(this._indent.repeat(this._indent_level) + text);
+
         // set indentation fo next line
         if (TOKENS.INCREMENT_STATEMENT.test(text)) {
             this._indent_level += 1;
         }
     }
 
+    /**
+     * returns the error decoration
+     * @returns
+     */
     public getDecoErr() {
         return this._stack!.getDecoErr();
     }
 
+    /**
+     * return match decoration
+     * @returns
+     */
     public getDecoInfo() {
         return this._stack!.getDecoInfo();
     }

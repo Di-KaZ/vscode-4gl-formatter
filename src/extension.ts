@@ -24,17 +24,29 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(fourGlFormatter);
 
+    // vscode.workspace.onDidChangeTextDocument(e => {
+    //     let editor = vscode.window.visibleTextEditors
+    //         .filter(editorr => editorr.document.uri === e.document.uri)[0];
+    //     formatter.setDocument(e.document)
+    //     // formatter.updateIfStack();
+    //     // Getting Match decorators
+    //     let infoMatchs = formatter.getDecoInfo();
+    //     infoMatchs.forEach(info => editor.setDecorations(info.decoration, [info.decorationOption]))
+    // })
+
     vscode.workspace.onWillSaveTextDocument(e => {
         let editor = vscode.window.visibleTextEditors
             .filter(editorr => editorr.document.uri === e.document.uri)[0];
-
+        formatter.setDocument(e.document)
+        formatter.processLines();
         // Getting Match decorators
         let infoMatchs = formatter.getDecoInfo();
         infoMatchs.forEach(info => editor.setDecorations(info.decoration, [info.decorationOption]))
 
-        // Getting error decorators
-        let infoErr = formatter.getDecoErr();
-        infoErr.forEach(info => editor.setDecorations(info.decoration, [info.decorationOption]))
+        // TODO FIX THIS
+        // // Getting error decorators
+        // let infoErr = formatter.getDecoErr();
+        // infoErr.forEach(info => editor.setDecorations(info.decoration, [info.decorationOption]))
     })
 
 

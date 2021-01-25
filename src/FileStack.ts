@@ -15,13 +15,11 @@ interface CommentMatch {
 
 export class FileStack {
     private _stack: Node[];
-    private _document: vscode.TextDocument;
     private _deco_info: CommentMatch[];
     private _deco_err: CommentMatch[];
 
-    constructor(document: vscode.TextDocument) {
+    constructor() {
         this._stack = [];
-        this._document = document;
 
         this._deco_err = [];
         this._deco_info = [];
@@ -37,7 +35,7 @@ export class FileStack {
     }
 
     createComment(comment: string, error?: boolean): vscode.TextEditorDecorationType {
-        return vscode.window.createTextEditorDecorationType({ after: { contentText: comment, color: error ? 'red' : 'gray' } })
+        return vscode.window.createTextEditorDecorationType({ after: { contentText: comment, color: error ? '#ff000070' : '#80808070' } })
     }
 
     // return the top elem of the stack if not null
@@ -78,15 +76,14 @@ export class FileStack {
     checkStackStatus() {
         if (this._stack.length === 0) {
             return;
-        } else {
-            this._stack.forEach((node) => {
-                let range = node.content.range;
-                this._deco_err.push({
-                    decorationOption: { range },
-                    decoration: this.createComment("no closing statement", true)
-                });
-            });
         }
+        this._stack.forEach((node) => {
+            let range = node.content.range;
+            this._deco_err.push({
+                decorationOption: { range },
+                decoration: this.createComment("no closing statement", true)
+            });
+        });
     }
 
     /**
