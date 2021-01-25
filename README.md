@@ -13,13 +13,13 @@ I will work on an adapted architecture and feature when I got the time to.
 
 > ⚠ I didn't really searched much on how to write a vscode extention, please be gentle with me 😃
 
-![preview](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/img/preview.gif?raw=true)
+![preview](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/preview.gif?raw=true)
 
-![comments](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/img/comment_preview.PNG?raw=true)
+![comments](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/comment_preview.PNG?raw=true)
 **Now display comments & errors as text decoration !**
 
 ## Extension Settings
-![settings](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/img/preview_settings.PNG?raw=true)
+![settings](https://github.com/Di-KaZ/vscode-4gl-formatter/blob/main/preview_settings.PNG?raw=true)
 
 * `4gl-formatter.format-4gl-file -> "4gl Formatter : Format file"`:  format the active file
 
