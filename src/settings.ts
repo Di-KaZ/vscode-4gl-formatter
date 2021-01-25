@@ -24,6 +24,9 @@ export let options: ISettings = {
     mode: IndentMode.MODE_LINE,
 };
 
+export const FOUR_GL: vscode.DocumentSelector = { scheme: 'file', language: 'ifx-4gl' };
+
+// function that update the extention settings
 export function updateConfig(): void {
     options = vscode.workspace.getConfiguration("4gl-formatter") as any as ISettings;
 }

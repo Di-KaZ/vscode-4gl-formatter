@@ -1,21 +1,33 @@
-import { Printer } from "./Printer";
+import * as vscode from "vscode";
 import { IndentMode, options } from "./settings";
 
 interface Node {
-    content: string;
+    content: vscode.TextLine;
     line: number;
     stackSize: number;
     getComment: (node: Node) => string;
 }
 
+interface CommentMatch {
+    decoration: vscode.TextEditorDecorationType;
+    decorationOption: vscode.DecorationOptions;
+}
+
 export class FileStack {
     private _stack: Node[];
+    private _document: vscode.TextDocument;
+    private _deco_info: CommentMatch[];
+    private _deco_err: CommentMatch[];
 
-    constructor() {
+    constructor(document: vscode.TextDocument) {
         this._stack = [];
+        this._document = document;
+
+        this._deco_err = [];
+        this._deco_info = [];
     }
 
-    pushStack(text: string, index: number): void {
+    pushStack(text: vscode.TextLine, index: number): void {
         this._stack.push({
             content: text,
             line: index,
@@ -24,44 +36,55 @@ export class FileStack {
         });
     }
 
-    // return the top elem of the stack if not null
-    getTopStackComment(current_index: number): string {
-        const top_node = this._stack.slice(-1)[0];
+    createComment(comment: string, error?: boolean): vscode.TextEditorDecorationType {
+        return vscode.window.createTextEditorDecorationType({ after: { contentText: comment, color: error ? 'red' : 'gray' } })
+    }
 
+    // return the top elem of the stack if not null
+    getTopStackComment(text: vscode.TextLine, current_index: number): void {
+        const top_node = this._stack.slice(-1)[0];
+        let range = text.range;
         if (top_node !== undefined) {
-            return top_node.getComment(top_node);
+            this._deco_info.push({
+                decorationOption: { range },
+                decoration: this.createComment(top_node.getComment(top_node))
+            });
+            return;
         }
-        Printer.error(
-            `unable to find an opening statement for line ${current_index}`
-        );
-        return " { error: no openning statement }";
+        this._deco_err.push({
+            decorationOption: { range },
+            decoration: this.createComment("unable to find an opening statement", true)
+        });
     }
 
     // Same but delete it
-    popTopStackComment(current_index: number): string {
+    popTopStackComment(text: vscode.TextLine, current_index: number): void {
         const top_node = this._stack.pop();
+        let range = text.range;
 
         if (top_node !== undefined) {
-            return top_node.getComment(top_node);
+            this._deco_info.push({
+                decorationOption: { range },
+                decoration: this.createComment(top_node.getComment(top_node))
+            });
+            return;
         }
-        Printer.error(
-            `unable to find an opening statement for line ${current_index}`
-        );
-        return " { error: no openning statement }";
+        this._deco_err.push({
+            decorationOption: { range },
+            decoration: this.createComment("unable to find an opening statement", true)
+        });
     }
 
-    checkStackStatus(): void {
+    checkStackStatus() {
         if (this._stack.length === 0) {
             return;
         } else {
             this._stack.forEach((node) => {
-                Printer.error(
-                    `no closing statement for line ${node.line + 1} : ` +
-                    `'${node.content.length > 10
-                        ? node.content.substr(0, 10) + "..."
-                        : node.content
-                    }'.`
-                );
+                let range = node.content.range;
+                this._deco_err.push({
+                    decorationOption: { range },
+                    decoration: this.createComment("no closing statement", true)
+                });
             });
         }
     }
@@ -92,9 +115,9 @@ export class FileStack {
     private static modeCondition(node: Node): string {
         return (
             "  { " +
-            (node.content.length > 10
-                ? node.content.substr(3, 40)
-                : node.content.slice(3)) +
+            (node.content.text.length > 10
+                ? node.content.text.substr(3, 40)
+                : node.content.text.slice(3)) +
             " }"
         );
     }
@@ -111,5 +134,13 @@ export class FileStack {
 
     private static modeLine(node: Node): string {
         return `  { Match Line ${node.line + 1} }`;
+    }
+
+    public getDecoErr() {
+        return this._deco_err;
+    }
+
+    public getDecoInfo() {
+        return this._deco_info;
     }
 }

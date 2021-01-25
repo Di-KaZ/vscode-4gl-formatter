@@ -36,9 +36,9 @@ export default class FileFormatter {
     private _out_edit: vscode.TextEdit[]; // formatted lines
     private _current_line_index: number; // current line that we are formatting
     private _indent_level: number; // current indentation depth
-    private _stack: FileStack;
+    private _stack: FileStack | null;
     private _indent: string;
-    private _document: vscode.TextDocument;
+    private _document: vscode.TextDocument | null;
 
     /**
      * Create a file instance
@@ -46,29 +46,34 @@ export default class FileFormatter {
      * @param out_directory
      * @param indent_chars
      */
-    public constructor(document: vscode.TextDocument) {
+    public constructor() {
         this._current_line_index = 0;
         this._out_edit = [];
         this._indent_level = 0;
-        this._stack = new FileStack();
-        this._document = document;
         this._indent = options.indentation === Indent.TAB ? "\t" : "    "
+        this._stack = null;
+        this._document = null;
     }
 
+    public setDocument(document: vscode.TextDocument): void {
+        this._document = document;
+        this._stack = new FileStack(document);
+    }
 
     /**
      * Process line of the file one by one
      */
-    public processLines(): void {
+    public processLines() {
         Printer.info(`Formatting file`);
         // tant qu'il y a des lignes a traité on s'en occupe
-        while (this._current_line_index < this._document.lineCount) {
+        while (this._current_line_index < this._document!.lineCount) {
             this.processLine();
         }
         // finished formatting reporting problems found
         // check if errors in file are detected by the stack
-        this._stack.checkStackStatus();
         Printer.info(`Done Formatting file.`);
+        this._stack!.checkStackStatus();
+        return;
     }
 
     // return the formatted files lines
@@ -77,48 +82,32 @@ export default class FileFormatter {
     }
 
     /**
-     * Temporary for the match commenting feature as its print it at every formatteing trigger
-     * this prevent it but if we change mode i'ts not working anymore
-     * @param line
-     * @param comment
-     * @returns
-     */
-    private checkIfLineAlereadyCommented(line: string, comment: string): string {
-        if (!line.includes(comment)) {
-            return line + comment;
-        }
-        return line;
-    }
-    /**
      * check if the like is an opening statement or a closing one to print the comment after
      * @param line
      * @returns line + comment
      */
-    private manageIfStack(line: string): string {
+    private manageIfStack(line: vscode.TextLine): void {
         // if we found a new nesting token like an if add it to the stack
-        if (TOKENS.PUSH_STACK.test(line)) {
-            this._stack.pushStack(line, this._current_line_index);
-            return (
-                this.checkIfLineAlereadyCommented(line, this._stack.getTopStackComment(this._current_line_index + 1))
-            );
+        let text = line.text.trim();
+        if (TOKENS.PUSH_STACK.test(text)) {
+            this._stack!.pushStack(line, this._current_line_index);
+            this._stack!.getTopStackComment(line, this._current_line_index + 1)
+            return;
         }
         // if it's an intermediate token like an else juste add the comment
-        if (TOKENS.PRINT_LIBL_STACK.test(line)) {
-            return (
-                this.checkIfLineAlereadyCommented(line, this._stack.getTopStackComment(this._current_line_index + 1))
-            );
+        if (TOKENS.PRINT_LIBL_STACK.test(text)) {
+            this._stack!.getTopStackComment(line, this._current_line_index + 1)
+            return;
         }
         // if we close the statement pop the stack
-        if (TOKENS.POP_STACK.test(line)) {
-            return (
-                this.checkIfLineAlereadyCommented(line, this._stack.popTopStackComment(this._current_line_index + 1))
-            );
+        if (TOKENS.POP_STACK.test(text)) {
+            this._stack!.popTopStackComment(line, this._current_line_index + 1)
+            return;
         }
-        return line;
     }
 
     private addFormattedLine(text: string) {
-        let line_range = this._document.lineAt(this._current_line_index).range;
+        let line_range = this._document!.lineAt(this._current_line_index).range;
         this._out_edit.push(vscode.TextEdit.delete(line_range));
         this._out_edit.push(vscode.TextEdit.insert(line_range.start, text));
         this._current_line_index += 1; // increment the current line in file
@@ -130,7 +119,7 @@ export default class FileFormatter {
      */
     private processLine(): void {
         // get the current line in file
-        let text: string = this._document.lineAt(this._current_line_index).text;
+        let text: string = this._document!.lineAt(this._current_line_index).text;
 
         // if line is just empty or just a signle line comment print it
         if (TOKENS.EMPTY_LINE_OR_COMMENT.test(text)) {
@@ -143,7 +132,7 @@ export default class FileFormatter {
             while (TOKENS.MULTI_LINE_COMMENT_CLOSE.test(text) === false) {
                 this.addFormattedLine(text);
                 this._current_line_index += 1;
-                text = this._document.lineAt(this._current_line_index).text;
+                text = this._document!.lineAt(this._current_line_index).text;
             }
             this.addFormattedLine(text);
             return;
@@ -152,8 +141,9 @@ export default class FileFormatter {
         // if not empty or a comment //
         // delete before and after space to clean up indentation and search token from start of string
         text = text.trim();
+
         if (options.mode !== IndentMode.MODE_NONE) {
-            text = this.manageIfStack(text);
+            this.manageIfStack(this._document!.lineAt(this._current_line_index));
         }
 
         // check if we have to decrement indentation
@@ -170,10 +160,18 @@ export default class FileFormatter {
 
         // output line with indentation
         this.addFormattedLine(this._indent.repeat(this._indent_level) + text);
-
+        // console.log(this._indent.repeat(this._indent_level) + text);
         // set indentation fo next line
         if (TOKENS.INCREMENT_STATEMENT.test(text)) {
             this._indent_level += 1;
         }
+    }
+
+    public getDecoErr() {
+        return this._stack!.getDecoErr();
+    }
+
+    public getDecoInfo() {
+        return this._stack!.getDecoInfo();
     }
 }

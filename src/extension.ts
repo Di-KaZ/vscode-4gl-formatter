@@ -2,10 +2,9 @@ import * as vscode from "vscode";
 import FileFormatter from "./FileFormatter";
 import { updateConfig } from "./settings";
 
+let formatter = new FileFormatter();
+
 export function activate(context: vscode.ExtensionContext) {
-    //   The command has been defined in the package.json file
-    //   Now provide the implementation of the command with registerCommand
-    //   The commandId parameter must match the command field in package.json
     let actiavte = vscode.commands.registerCommand(
         "4gl-formatter.activate",
         () => {
@@ -15,16 +14,31 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(actiavte);
 
+    // Create the new formatter
     let fourGlFormatter = vscode.languages.registerDocumentFormattingEditProvider("4gl", {
         provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
-            let formatter = new FileFormatter(document);
+            formatter.setDocument(document);
             formatter.processLines();
             return formatter.getOutLines();
         },
     });
     context.subscriptions.push(fourGlFormatter);
 
+    vscode.workspace.onWillSaveTextDocument(e => {
+        let editor = vscode.window.visibleTextEditors
+            .filter(editorr => editorr.document.uri === e.document.uri)[0];
 
+        // Getting Match decorators
+        let infoMatchs = formatter.getDecoInfo();
+        infoMatchs.forEach(info => editor.setDecorations(info.decoration, [info.decorationOption]))
+
+        // Getting error decorators
+        let infoErr = formatter.getDecoErr();
+        infoErr.forEach(info => editor.setDecorations(info.decoration, [info.decorationOption]))
+    })
+
+
+    // update config when needed
     function onConfigChange(e: vscode.ConfigurationChangeEvent): void {
         if (!e.affectsConfiguration("4gl-formatter")) {
             return;
