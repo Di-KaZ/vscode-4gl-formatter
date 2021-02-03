@@ -34,7 +34,15 @@ I will work on an adapted architecture and feature when I got the time to.
 [**install this extention that provide syntax highlight for 4gl**](https://marketplace.visualstudio.com/items?itemName=eurrutia.ifx-4gl)
 
 ## Known Issues
+Because i'm parsing line by line opening and closing tag at the end of a line are not interpreted ex:
 
+```4gl
+if condition then do_demething end if # this will not be considered as a whole if - end if, only the if will be detected. Same code after a mutiline comment
+```
+
+I will work on a better algorithm for parsing the code (via AST) on my free time
+
+- decoration will not work on large file, I assume that vscode limit the number of decoration
 
 ## Release Notes
 
